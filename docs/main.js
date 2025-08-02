@@ -83,7 +83,8 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 
   if (!currentPlayer) return;
-
+  
+  updateKeyboardMovement();
   currentPlayer.x += moveX * 2;
   currentPlayer.y += moveY * 2;
   socket.emit("move", currentPlayer);
