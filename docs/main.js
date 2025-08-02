@@ -1,6 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const socket = io("https://replit.com/@ryanfendiwardan/pixelrich-server?v=1"); // Ganti ini dengan server Socket.IO kamu
+const socket = io("https://replit.com/@ryanfendiwardan/pixelrich-server"); // Ganti ini dengan server Socket.IO kamu
 
 let players = {};
 let currentPlayer = null;
