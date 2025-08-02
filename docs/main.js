@@ -76,16 +76,21 @@ function gameLoop() {
   if (!currentPlayer) return;
 
   updateKeyboardMovement();
-// Tombol panah di HP
-document.getElementById('btnUp').addEventListener('touchstart', () => moveY = -1);
-document.getElementById('btnDown').addEventListener('touchstart', () => moveY = 1);
-document.getElementById('btnLeft').addEventListener('touchstart', () => moveX = -1);
-document.getElementById('btnRight').addEventListener('touchstart', () => moveX = 1);
+// Tombol panah touchscreen (HP)
+const btnUp = document.getElementById("btnUp");
+const btnDown = document.getElementById("btnDown");
+const btnLeft = document.getElementById("btnLeft");
+const btnRight = document.getElementById("btnRight");
 
-document.getElementById('btnUp').addEventListener('touchend', () => moveY = 0);
-document.getElementById('btnDown').addEventListener('touchend', () => moveY = 0);
-document.getElementById('btnLeft').addEventListener('touchend', () => moveX = 0);
-document.getElementById('btnRight').addEventListener('touchend', () => moveX = 0);
+btnUp.addEventListener("touchstart", () => moveY = -1);
+btnDown.addEventListener("touchstart", () => moveY = 1);
+btnLeft.addEventListener("touchstart", () => moveX = -1);
+btnRight.addEventListener("touchstart", () => moveX = 1);
+
+btnUp.addEventListener("touchend", () => moveY = 0);
+btnDown.addEventListener("touchend", () => moveY = 0);
+btnLeft.addEventListener("touchend", () => moveX = 0);
+btnRight.addEventListener("touchend", () => moveX = 0);
 
   
   currentPlayer.x += moveX * 2;
