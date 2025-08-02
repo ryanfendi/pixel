@@ -8,6 +8,7 @@ let moveX = 0;
 let moveY = 0;
 let chatMessages = {};
 
+// Gambar
 const bg = new Image();
 bg.src = 'assets/bg.png';
 
@@ -18,7 +19,7 @@ const images = {
 images.male.src = 'assets/player_male.png';
 images.female.src = 'assets/player_female.png';
 
-// GENDER SELECT
+// Fungsi pilih karakter
 function selectGender(gender) {
   document.getElementById('genderSelector').style.display = 'none';
   canvas.style.display = 'block';
@@ -34,11 +35,12 @@ function selectGender(gender) {
 }
 window.selectGender = selectGender;
 
-// UPDATE DARI SERVER
+// Update pemain dari server
 socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
 
+// Tampilkan chat bubble di atas karakter
 socket.on("chat", ({ id, message }) => {
   chatMessages[id] = { text: message, time: Date.now() };
 
@@ -49,7 +51,7 @@ socket.on("chat", ({ id, message }) => {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
 
-// INPUT CHAT
+// Input chat
 const chatInput = document.getElementById("chatInput");
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && chatInput.value.trim() !== "") {
@@ -58,7 +60,7 @@ chatInput.addEventListener("keydown", (e) => {
   }
 });
 
-// KEYBOARD CONTROL
+// Keyboard movement (PC)
 let keys = {};
 window.addEventListener("keydown", (e) => { keys[e.key] = true; });
 window.addEventListener("keyup", (e) => { keys[e.key] = false; });
@@ -73,20 +75,24 @@ function updateKeyboardMovement() {
   else if (!dragging) moveX = 0;
 }
 
-// JOYSTICK / TOUCH DIRECTION
-const stick = document.getElementById('stick');
-const joystick = document.getElementById('joystick');
+// Touchscreen joystick
 let dragging = false;
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
 
-joystick.addEventListener('touchstart', () => { dragging = true; });
-joystick.addEventListener('touchend', () => {
+joystick.addEventListener("touchstart", () => {
+  dragging = true;
+});
+
+joystick.addEventListener("touchend", () => {
   dragging = false;
-  stick.style.left = '30px';
-  stick.style.top = '30px';
+  stick.style.left = "30px";
+  stick.style.top = "30px";
   moveX = 0;
   moveY = 0;
 });
-joystick.addEventListener('touchmove', (e) => {
+
+joystick.addEventListener("touchmove", (e) => {
   if (!dragging) return;
   e.preventDefault();
 
@@ -106,23 +112,20 @@ joystick.addEventListener('touchmove', (e) => {
   moveY = clampedY / max;
 });
 
-// TOMBOL ARAH UNTUK HP
-const btnUp = document.getElementById("btnUp");
-const btnDown = document.getElementById("btnDown");
-const btnLeft = document.getElementById("btnLeft");
-const btnRight = document.getElementById("btnRight");
+// Tombol Arah (Mobile)
+document.getElementById("btnUp")?.addEventListener("touchstart", () => moveY = -1);
+document.getElementById("btnDown")?.addEventListener("touchstart", () => moveY = 1);
+document.getElementById("btnLeft")?.addEventListener("touchstart", () => moveX = -1);
+document.getElementById("btnRight")?.addEventListener("touchstart", () => moveX = 1);
 
-btnUp?.addEventListener("touchstart", () => moveY = -1);
-btnDown?.addEventListener("touchstart", () => moveY = 1);
-btnLeft?.addEventListener("touchstart", () => moveX = -1);
-btnRight?.addEventListener("touchstart", () => moveX = 1);
+["btnUp", "btnDown"].forEach(id => {
+  document.getElementById(id)?.addEventListener("touchend", () => moveY = 0);
+});
+["btnLeft", "btnRight"].forEach(id => {
+  document.getElementById(id)?.addEventListener("touchend", () => moveX = 0);
+});
 
-btnUp?.addEventListener("touchend", () => moveY = 0);
-btnDown?.addEventListener("touchend", () => moveY = 0);
-btnLeft?.addEventListener("touchend", () => moveX = 0);
-btnRight?.addEventListener("touchend", () => moveX = 0);
-
-// GAME LOOP
+// Game Loop
 function gameLoop() {
   requestAnimationFrame(gameLoop);
 
