@@ -1,25 +1,21 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev/");
+const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev");
 
 let players = {};
 let currentPlayer = null;
 
-// Background
+// Load background
 const bg = new Image();
 bg.src = 'assets/bg.png';
-bg.onload = () => console.log("Background termuat");
 
-// Player Images
+// Load player images
 const images = {
   male: new Image(),
   female: new Image(),
 };
 images.male.src = 'assets/player_male.png';
 images.female.src = 'assets/player_female.png';
-
-images.male.onload = () => console.log("Gambar male termuat");
-images.female.onload = () => console.log("Gambar female termuat");
 
 // Joystick
 let moveX = 0;
@@ -62,44 +58,43 @@ joystick.addEventListener('touchend', () => {
   moveY = 0;
 });
 
-// Pilih Gender
+// Gender select
 function selectGender(gender) {
   document.getElementById('genderSelector').style.display = 'none';
   canvas.style.display = 'block';
   document.getElementById('chatBox').style.display = 'block';
 
   currentPlayer = {
-    x: 100,
-    y: 100,
+    x: 100 + Math.random() * 200,
+    y: 100 + Math.random() * 200,
     gender: gender
   };
 
   socket.emit("newPlayer", currentPlayer);
 }
 
-// Socket updates
+// Server updates
 socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
 
-// Game Loop
+// Game loop
 function gameLoop() {
   requestAnimationFrame(gameLoop);
+
   if (!currentPlayer) return;
 
-  // Update posisi
   currentPlayer.x += moveX * 2;
   currentPlayer.y += moveY * 2;
   socket.emit("move", currentPlayer);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
   for (let id in players) {
     const p = players[id];
     const img = images[p.gender];
-    if (img.complete && img.naturalHeight !== 0) {
+    if (img.complete) {
       ctx.drawImage(img, p.x, p.y, 32, 32);
     }
   }
