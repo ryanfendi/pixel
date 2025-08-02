@@ -56,22 +56,41 @@ canvas {
 }
 
 #dpad {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
-  right: 20px;
-  text-align: center;
+  left: 20px;
+  display: grid;
+  grid-template-areas:
+    ". up ."
+    "left down right";
+  grid-gap: 10px;
+  width: 180px;
+  height: 180px;
   z-index: 10;
+}
+
+#btnUp {
+  grid-area: up;
+}
+#btnDown {
+  grid-area: down;
+}
+#btnLeft {
+  grid-area: left;
+}
+#btnRight {
+  grid-area: right;
 }
 
 #dpad button {
   width: 60px;
   height: 60px;
   font-size: 24px;
-  margin: 5px;
   border-radius: 10px;
   border: none;
   background-color: #444;
   color: white;
+  touch-action: none;
 }
 
 #dpad button:active {
