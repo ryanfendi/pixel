@@ -267,3 +267,29 @@ function updateCoinDisplay() {
 
 // Kirim juga saldo PR Coin ke server (nantinya bisa disimpan)
 socket.emit("updateCoin", { id: socket.id, coin: prCoin });
+
+function updateLandPopup(index) {
+  const land = lands[index];
+  const popup = document.getElementById("landPopup");
+  const info = document.getElementById("landInfo");
+  const buyBtn = document.getElementById("buyLandBtn");
+
+  if (!land) {
+    info.textContent = `Tanah #${index} tersedia`;
+    buyBtn.style.display = "inline-block";
+    buyBtn.onclick = () => {
+      socket.emit("buyLand", index, currentPlayer?.gender || "Player");
+      popup.style.display = "none";
+    };
+  } else {
+    info.textContent = `Tanah #${index} dimiliki oleh ${land.ownerName}`;
+    buyBtn.style.display = "none";
+  }
+
+  popup.style.display = "block";
+}
+canvas.addEventListener("click", () => {
+  if (selectedLandIndex === null) {
+    document.getElementById("landPopup").style.display = "none";
+  }
+});
