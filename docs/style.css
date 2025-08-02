@@ -9,9 +9,12 @@ body {
 
 canvas {
   display: block;
-  margin: auto;
+  width: 100vw;
+  height: 100vh;
   background-color: #333;
+  touch-action: none;
 }
+
 
 #genderSelector {
   margin-top: 100px;
