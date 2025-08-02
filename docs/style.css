@@ -82,17 +82,22 @@ canvas {
   grid-area: right;
 }
 
-#dpad button {
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
-  border-radius: 10px;
-  border: none;
-  background-color: #444;
-  color: white;
-  touch-action: none;
+#dpad {
+  position: fixed;
+  bottom: 140px;
+  left: 30px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
 }
 
-#dpad button:active {
-  background-color: #777;
+#dpad button {
+  font-size: 24px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #444;
+  color: white;
 }
