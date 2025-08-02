@@ -47,8 +47,9 @@ socket.on("chat", ({ id, message }) => {
 
   const messagesDiv = document.getElementById("messages");
   const msg = document.createElement("div");
-  msg.textContent = `${players[id]?.gender || "Player"}: ${message}`;
-  messagesDiv.appendChild(msg);
+msg.className = "message " + (id === socket.id ? "self" : "other");
+msg.textContent = (id === socket.id ? "🟢 Kamu: " : `${players[id]?.gender || "Player"}: `) + message;
+messagesDiv.appendChild(msg);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
 
