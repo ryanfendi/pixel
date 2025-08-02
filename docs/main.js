@@ -77,6 +77,12 @@ socket.on("updatePlayers", (serverPlayers) => {
 
 function gameLoop() {
   requestAnimationFrame(gameLoop);
+  if (currentPlayer) {
+  currentPlayer.x += moveX * 2;
+  currentPlayer.y += moveY * 2;
+  socket.emit("move", currentPlayer);
+}
+
   if (!currentPlayer) return;
 ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
