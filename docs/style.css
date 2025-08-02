@@ -1,4 +1,5 @@
 /* style.css */
+
 body {
   margin: 0;
   background-color: #222;
@@ -14,6 +15,7 @@ canvas {
   background-color: #333;
 }
 
+/* GENDER SELECTOR */
 #genderSelector {
   text-align: center;
   margin-top: 100px;
@@ -34,6 +36,7 @@ canvas {
   background-color: #666;
 }
 
+/* CHAT BOX */
 #chatBox {
   margin-top: 20px;
 }
@@ -55,18 +58,19 @@ canvas {
   border: 1px solid #333;
 }
 
+/* DPAD (TOUCHSCREEN CONTROL) */
 #dpad {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  bottom: 30px;
+  left: 30px;
   display: grid;
+  grid-template-columns: 50px 50px 50px;
+  grid-template-rows: 50px 50px;
   grid-template-areas:
     ". up ."
     "left down right";
-  grid-gap: 10px;
-  width: 180px;
-  height: 180px;
-  z-index: 10;
+  gap: 10px;
+  z-index: 100;
 }
 
 #btnUp {
@@ -82,17 +86,6 @@ canvas {
   grid-area: right;
 }
 
-#dpad {
-  position: fixed;
-  bottom: 140px;
-  left: 30px;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  align-items: center;
-}
-
 #dpad button {
   font-size: 24px;
   padding: 10px;
@@ -100,4 +93,24 @@ canvas {
   border-radius: 8px;
   background-color: #444;
   color: white;
+  width: 50px;
+  height: 50px;
+}
+
+/* OPTIONAL RESPONSIVENESS */
+@media (max-width: 600px) {
+  #chatInput {
+    width: 80%;
+  }
+
+  #dpad {
+    bottom: 20px;
+    left: 10px;
+    gap: 8px;
+  }
+
+  #dpad button {
+    width: 45px;
+    height: 45px;
+  }
 }
