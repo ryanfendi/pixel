@@ -59,14 +59,14 @@ canvas {
 /* Tombol Arah HP */
 #dpad {
   position: fixed;
-  bottom: 5px;  /* Dekat ke bawah */
-  left: 5px;    /* Dekat ke kiri */
+  bottom: 80px; /* disesuaikan agar sejajar chat */
+  left: 10px;   /* menempel ke kiri layar */
   display: grid;
   grid-template-areas:
     ". up ."
     "left down right";
   grid-template-columns: 50px 50px 50px;
-  grid-gap: 3px;
+  grid-gap: 5px;
   z-index: 100;
 }
 
@@ -81,7 +81,7 @@ canvas {
   font-size: 20px;
   border: none;
   border-radius: 8px;
-  background-color: #555;
+  background-color: #444;
   color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
