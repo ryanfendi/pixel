@@ -1,4 +1,3 @@
-// main.js
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev");
@@ -20,43 +19,32 @@ const images = {
 images.male.src = 'assets/player_male.png';
 images.female.src = 'assets/player_female.png';
 
-// JOYSTICK
-const joystick = document.getElementById('joystick');
-const stick = document.getElementById('stick');
-
+// --- TOUCHSCREEN DRAG MOVE ---
 let dragging = false;
 let startX = 0, startY = 0;
 
-joystick.addEventListener('touchstart', (e) => {
-  dragging = true;
+canvas.addEventListener('touchstart', (e) => {
   const touch = e.touches[0];
-  startX = touch.clientX;
-  startY = touch.clientY;
+  if (touch.clientX < window.innerWidth / 2) {
+    dragging = true;
+    startX = touch.clientX;
+    startY = touch.clientY;
+  }
 });
 
-joystick.addEventListener('touchmove', (e) => {
+canvas.addEventListener('touchmove', (e) => {
   if (!dragging) return;
-  e.preventDefault();
-
   const touch = e.touches[0];
   const dx = touch.clientX - startX;
   const dy = touch.clientY - startY;
 
   const max = 40;
-  const dist = Math.min(max, Math.hypot(dx, dy));
-  const angle = Math.atan2(dy, dx);
-  const x = Math.cos(angle) * dist;
-  const y = Math.sin(angle) * dist;
-
-  stick.style.transform = `translate(${x}px, ${y}px)`;
-
-  moveX = x / max;
-  moveY = y / max;
+  moveX = Math.max(-1, Math.min(1, dx / max));
+  moveY = Math.max(-1, Math.min(1, dy / max));
 });
 
-joystick.addEventListener('touchend', () => {
+canvas.addEventListener('touchend', () => {
   dragging = false;
-  stick.style.transform = `translate(0px, 0px)`;
   moveX = 0;
   moveY = 0;
 });
@@ -75,9 +63,9 @@ function selectGender(gender) {
 
   socket.emit("newPlayer", currentPlayer);
 }
-window.selectGender = selectGender; // agar bisa diakses dari HTML onclick
+window.selectGender = selectGender;
 
-// RECEIVE PLAYER DATA
+// SOCKET LISTENER
 socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
@@ -107,7 +95,7 @@ function gameLoop() {
 }
 gameLoop();
 
-// KEYBOARD (untuk PC)
+// PC: Keyboard movement
 let keys = {};
 window.addEventListener("keydown", (e) => keys[e.key] = true);
 window.addEventListener("keyup", (e) => keys[e.key] = false);
