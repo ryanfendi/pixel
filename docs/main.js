@@ -1,3 +1,4 @@
+// main.js
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev");
@@ -19,46 +20,48 @@ const images = {
 images.male.src = 'assets/player_male.png';
 images.female.src = 'assets/player_female.png';
 
-// Joystick
-const stick = document.getElementById('stick');
+// JOYSTICK
 const joystick = document.getElementById('joystick');
+const stick = document.getElementById('stick');
+
 let dragging = false;
+let startX = 0, startY = 0;
 
 joystick.addEventListener('touchstart', (e) => {
   dragging = true;
+  const touch = e.touches[0];
+  startX = touch.clientX;
+  startY = touch.clientY;
 });
 
 joystick.addEventListener('touchmove', (e) => {
   if (!dragging) return;
   e.preventDefault();
 
-  const rect = joystick.getBoundingClientRect();
   const touch = e.touches[0];
-  const x = touch.clientX - rect.left - 50;
-  const y = touch.clientY - rect.top - 50;
+  const dx = touch.clientX - startX;
+  const dy = touch.clientY - startY;
 
   const max = 40;
-  const clampedX = Math.max(-max, Math.min(max, x));
-  const clampedY = Math.max(-max, Math.min(max, y));
+  const dist = Math.min(max, Math.hypot(dx, dy));
+  const angle = Math.atan2(dy, dx);
+  const x = Math.cos(angle) * dist;
+  const y = Math.sin(angle) * dist;
 
-  stick.style.left = `${clampedX + 50 - 20}px`;
-  stick.style.top = `${clampedY + 50 - 20}px`;
+  stick.style.transform = `translate(${x}px, ${y}px)`;
 
-  moveX = clampedX / max;
-  moveY = clampedY / max;
-
-  console.log("Joystick:", moveX.toFixed(2), moveY.toFixed(2));
+  moveX = x / max;
+  moveY = y / max;
 });
 
 joystick.addEventListener('touchend', () => {
   dragging = false;
-  stick.style.left = '30px';
-  stick.style.top = '30px';
+  stick.style.transform = `translate(0px, 0px)`;
   moveX = 0;
   moveY = 0;
 });
 
-// Fungsi pilih gender
+// PILIH GENDER
 function selectGender(gender) {
   document.getElementById('genderSelector').style.display = 'none';
   canvas.style.display = 'block';
@@ -72,25 +75,23 @@ function selectGender(gender) {
 
   socket.emit("newPlayer", currentPlayer);
 }
+window.selectGender = selectGender; // agar bisa diakses dari HTML onclick
 
-// Agar bisa diakses dari HTML button onclick
-window.selectGender = selectGender;
-
-// Update data pemain dari server
+// RECEIVE PLAYER DATA
 socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
 
-// Game loop utama
+// GAME LOOP
 function gameLoop() {
   requestAnimationFrame(gameLoop);
-
   if (!currentPlayer) return;
 
   updateKeyboardMovement();
 
   currentPlayer.x += moveX * 2;
   currentPlayer.y += moveY * 2;
+
   socket.emit("move", currentPlayer);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -106,30 +107,17 @@ function gameLoop() {
 }
 gameLoop();
 
-// Keyboard controls
+// KEYBOARD (untuk PC)
 let keys = {};
+window.addEventListener("keydown", (e) => keys[e.key] = true);
+window.addEventListener("keyup", (e) => keys[e.key] = false);
 
-window.addEventListener("keydown", (e) => {
-  keys[e.key] = true;
-});
-
-window.addEventListener("keyup", (e) => {
-  keys[e.key] = false;
-});
-
-// Fungsi gerakan keyboard, hanya aktif jika joystick tidak digunakan
 function updateKeyboardMovement() {
-  if (dragging) return; // Prioritaskan joystick jika aktif
+  if (keys["ArrowUp"] || keys["w"]) moveY = -1;
+  else if (keys["ArrowDown"] || keys["s"]) moveY = 1;
+  else if (!dragging) moveY = 0;
 
-  let tempX = 0;
-  let tempY = 0;
-
-  if (keys["ArrowUp"] || keys["w"]) tempY = -1;
-  else if (keys["ArrowDown"] || keys["s"]) tempY = 1;
-
-  if (keys["ArrowLeft"] || keys["a"]) tempX = -1;
-  else if (keys["ArrowRight"] || keys["d"]) tempX = 1;
-
-  moveX = tempX;
-  moveY = tempY;
+  if (keys["ArrowLeft"] || keys["a"]) moveX = -1;
+  else if (keys["ArrowRight"] || keys["d"]) moveX = 1;
+  else if (!dragging) moveX = 0;
 }
