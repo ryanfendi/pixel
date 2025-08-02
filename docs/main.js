@@ -167,6 +167,11 @@ for (let i = 0; i < 100; i++) {
     ctx.fillStyle = "white";
     ctx.font = "10px sans-serif";
     ctx.fillText(land.ownerName, x + 2, y + 12);
+
+    function buyLand(index) {
+  socket.emit("buyLand", index, currentPlayer?.gender || "Player");
+}
+
   }
 }
 
