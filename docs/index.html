@@ -30,12 +30,16 @@
   <div id="messages"></div>
   <input type="text" id="chatInput" placeholder="Ketik pesan..." />
 </div>
-!-- BuyLandMenu -->
+<!-- BuyLandMenu -->
 <div id="buyLandMenu" style="position:fixed; bottom:150px; right:20px;">
   <button onclick="buyLand(0)">Beli Tanah #0 (50 PR Coin)</button>
 </div>
+<!-- Tampilkan Info dan Tombol Beli -->
+  <div id="landPopup" style="display:none; position:fixed; bottom:200px; right:20px; background:#222; padding:10px; border:1px solid #555; color:white; z-index:20;">
+  <div id="landInfo"></div>
+  <button id="buyLandBtn" onclick="">Beli Tanah Ini (50 PR Coin)</button>
+</div>
 
-  
   <!-- Script -->
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script src="main.js"></script>
