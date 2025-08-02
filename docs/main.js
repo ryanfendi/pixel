@@ -1,3 +1,6 @@
+const bg = new Image();
+bg.src = 'assets/bg.png';
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev/"); // Ganti ini dengan server Socket.IO kamu
@@ -36,6 +39,7 @@ socket.on("updatePlayers", (serverPlayers) => {
 function gameLoop() {
   requestAnimationFrame(gameLoop);
   if (!currentPlayer) return;
+ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
