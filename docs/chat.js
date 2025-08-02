@@ -3,7 +3,8 @@ const messagesDiv = document.getElementById('messages');
 
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && chatInput.value.trim() !== "") {
-    socket.emit("chat", chatInput.value);
+    const text = chatInput.value.trim();
+    socket.emit("chat", text);
     chatInput.value = "";
   }
 });
