@@ -16,6 +16,7 @@ let moveY = 0;
 let chatMessages = {};
 let isTouching = false; // Untuk mendeteksi apakah touchscreen sedang aktif
 let lands = [];
+let selectedLandIndex = null;
 
 socket.on("updateLands", (data) => {
   lands = data;
@@ -182,6 +183,24 @@ for (let i = 0; i < 100; i++) {
 }
 gameLoop();
 
+canvas.addEventListener("click", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+
+  for (let i = 0; i < 100; i++) {
+    const col = i % 10;
+    const row = Math.floor(i / 10);
+    const x = 50 + col * 50;
+    const y = 50 + row * 50;
+
+    if (mouseX >= x && mouseX <= x + 48 && mouseY >= y && mouseY <= y + 48) {
+      selectedLandIndex = i;
+      updateLandPopup(i);
+      break;
+    }
+  }
+});
 
 // === Tambahan ke main.js === //
 
