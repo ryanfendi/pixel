@@ -86,3 +86,24 @@ canvas {
   top: 30px;
   transition: 0.05s;
 }
+#joystick {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  touch-action: none;
+  z-index: 10;
+}
+
+#stick {
+  width: 40px;
+  height: 40px;
+  background: #ccc;
+  border-radius: 50%;
+  position: absolute;
+  left: 30px;
+  top: 30px;
+}
