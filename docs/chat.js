@@ -1,5 +1,5 @@
-const chatInput = document.getElementById("chatInput");
-const messages = document.getElementById("messages");
+const chatInput = document.getElementById('chatInput');
+const messagesDiv = document.getElementById('messages');
 
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && chatInput.value.trim() !== "") {
@@ -9,7 +9,8 @@ chatInput.addEventListener("keydown", (e) => {
 });
 
 socket.on("chat", (msg) => {
-  const div = document.createElement("div");
-  div.textContent = msg;
-  messages.appendChild(div);
+  const p = document.createElement("p");
+  p.textContent = msg;
+  messagesDiv.appendChild(p);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
