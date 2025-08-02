@@ -1,11 +1,4 @@
 const canvas = document.getElementById('gameCanvas');
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas(); // Panggil sekali di awal
-
 const ctx = canvas.getContext('2d');
 const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev");
 
@@ -14,15 +7,8 @@ let currentPlayer = null;
 let moveX = 0;
 let moveY = 0;
 let chatMessages = {};
-let isTouching = false; // Untuk mendeteksi apakah touchscreen sedang aktif
-let lands = [];
-let selectedLandIndex = null;
 
-socket.on("updateLands", (data) => {
-  lands = data;
-});
-
-// Load background & character images
+// Gambar
 const bg = new Image();
 bg.src = 'assets/bg.png';
 
@@ -33,7 +19,7 @@ const images = {
 images.male.src = 'assets/player_male.png';
 images.female.src = 'assets/player_female.png';
 
-// Pilih gender
+// Fungsi pilih karakter
 function selectGender(gender) {
   document.getElementById('genderSelector').style.display = 'none';
   canvas.style.display = 'block';
@@ -54,19 +40,18 @@ socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
 
-// Terima chat
+// Tampilkan chat bubble di atas karakter
 socket.on("chat", ({ id, message }) => {
   chatMessages[id] = { text: message, time: Date.now() };
 
   const messagesDiv = document.getElementById("messages");
   const msg = document.createElement("div");
-msg.className = "message " + (id === socket.id ? "self" : "other");
-msg.textContent = (id === socket.id ? "🟢 Kamu: " : `${players[id]?.gender || "Player"}: `) + message;
-messagesDiv.appendChild(msg);
+  msg.textContent = `${players[id]?.gender || "Player"}: ${message}`;
+  messagesDiv.appendChild(msg);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
 
-// Chat input
+// Input chat
 const chatInput = document.getElementById("chatInput");
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && chatInput.value.trim() !== "") {
@@ -75,60 +60,78 @@ chatInput.addEventListener("keydown", (e) => {
   }
 });
 
-// Keyboard PC
+// Keyboard movement (PC)
 let keys = {};
-window.addEventListener("keydown", (e) => {
-  keys[e.key] = true;
-});
-window.addEventListener("keyup", (e) => {
-  keys[e.key] = false;
-});
+window.addEventListener("keydown", (e) => { keys[e.key] = true; });
+window.addEventListener("keyup", (e) => { keys[e.key] = false; });
 
 function updateKeyboardMovement() {
-  if (isTouching) return; // Abaikan jika sedang sentuh
-
-  moveX = 0;
-  moveY = 0;
-
   if (keys["ArrowUp"] || keys["w"]) moveY = -1;
   else if (keys["ArrowDown"] || keys["s"]) moveY = 1;
+  else if (!dragging) moveY = 0;
 
   if (keys["ArrowLeft"] || keys["a"]) moveX = -1;
   else if (keys["ArrowRight"] || keys["d"]) moveX = 1;
+  else if (!dragging) moveX = 0;
 }
 
-// Tombol arah HP
-function startMove(x, y) {
-  moveX = x;
-  moveY = y;
-  isTouching = true;
-}
-function stopMove() {
-  moveX = 0;
-  moveY = 0;
-  isTouching = false;
-}
+// Touchscreen joystick
+let dragging = false;
+const joystick = document.getElementById("joystick");
+const stick = document.getElementById("stick");
 
-["btnUp", "btnDown", "btnLeft", "btnRight"].forEach(id => {
-  const btn = document.getElementById(id);
-  if (!btn) return;
-  btn.addEventListener("touchstart", () => {
-    if (id === "btnUp") startMove(0, -1);
-    if (id === "btnDown") startMove(0, 1);
-    if (id === "btnLeft") startMove(-1, 0);
-    if (id === "btnRight") startMove(1, 0);
-  });
-  btn.addEventListener("touchend", stopMove);
+joystick.addEventListener("touchstart", () => {
+  dragging = true;
 });
 
-// Game loop
+joystick.addEventListener("touchend", () => {
+  dragging = false;
+  stick.style.left = "30px";
+  stick.style.top = "30px";
+  moveX = 0;
+  moveY = 0;
+});
+
+joystick.addEventListener("touchmove", (e) => {
+  if (!dragging) return;
+  e.preventDefault();
+
+  const rect = joystick.getBoundingClientRect();
+  const touch = e.touches[0];
+  const x = touch.clientX - rect.left - 50;
+  const y = touch.clientY - rect.top - 50;
+
+  const max = 40;
+  const clampedX = Math.max(-max, Math.min(max, x));
+  const clampedY = Math.max(-max, Math.min(max, y));
+
+  stick.style.left = `${clampedX + 50 - 20}px`;
+  stick.style.top = `${clampedY + 50 - 20}px`;
+
+  moveX = clampedX / max;
+  moveY = clampedY / max;
+});
+
+// Tombol Arah (Mobile)
+document.getElementById("btnUp")?.addEventListener("touchstart", () => moveY = -1);
+document.getElementById("btnDown")?.addEventListener("touchstart", () => moveY = 1);
+document.getElementById("btnLeft")?.addEventListener("touchstart", () => moveX = -1);
+document.getElementById("btnRight")?.addEventListener("touchstart", () => moveX = 1);
+
+["btnUp", "btnDown"].forEach(id => {
+  document.getElementById(id)?.addEventListener("touchend", () => moveY = 0);
+});
+["btnLeft", "btnRight"].forEach(id => {
+  document.getElementById(id)?.addEventListener("touchend", () => moveX = 0);
+});
+
+// Game Loop
 function gameLoop() {
   requestAnimationFrame(gameLoop);
 
   if (!currentPlayer) return;
 
   updateKeyboardMovement();
-
   currentPlayer.x += moveX * 2;
   currentPlayer.y += moveY * 2;
   socket.emit("move", currentPlayer);
@@ -150,241 +153,33 @@ function gameLoop() {
         ctx.fillStyle = "white";
         ctx.font = "12px sans-serif";
         ctx.fillText(msg, p.x - bubbleWidth / 2 + 21, p.y - 10);
-
-// Render grid tanah
-for (let i = 0; i < 100; i++) {
-  const col = i % 10;
-  const row = Math.floor(i / 10);
-  const x = 50 + col * 50;
-  const y = 50 + row * 50;
-
-  ctx.strokeStyle = "yellow";
-  ctx.strokeRect(x, y, 48, 48);
-
-  const land = lands[i];
-  if (land) {
-    ctx.fillStyle = "rgba(255,255,0,0.2)";
-    ctx.fillRect(x, y, 48, 48);
-    ctx.fillStyle = "white";
-    ctx.font = "10px sans-serif";
-    ctx.fillText(land.ownerName, x + 2, y + 12);
-
-    function buyLand(index) {
-  socket.emit("buyLand", index, currentPlayer?.gender || "Player");
-}
-
-  }
-}
-
-        
       }
     }
   }
 }
 gameLoop();
+const btnUp = document.getElementById("btnUp");
+const btnDown = document.getElementById("btnDown");
+const btnLeft = document.getElementById("btnLeft");
+const btnRight = document.getElementById("btnRight");
 
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
+let touchInterval;
 
-  for (let i = 0; i < 100; i++) {
-    const col = i % 10;
-    const row = Math.floor(i / 10);
-    const x = 50 + col * 50;
-    const y = 50 + row * 50;
-
-    if (mouseX >= x && mouseX <= x + 48 && mouseY >= y && mouseY <= y + 48) {
-      selectedLandIndex = i;
-      updateLandPopup(i);
-      break;
-    }
-  }
-});
-
-// === Tambahan ke main.js === //
-
-// Saldo coin player
-let prCoin = 0;
-
-// Tombol Tambang PR Coin
-const mineBtn = document.createElement("button");
-mineBtn.textContent = "⛏️ Tambang PR Coin";
-mineBtn.id = "mineBtn";
-mineBtn.style.position = "fixed";
-mineBtn.style.bottom = "120px";
-mineBtn.style.right = "20px";
-mineBtn.style.zIndex = "1000";
-mineBtn.style.padding = "10px 15px";
-mineBtn.style.borderRadius = "10px";
-mineBtn.style.backgroundColor = "#28a745";
-mineBtn.style.color = "white";
-mineBtn.style.border = "none";
-document.body.appendChild(mineBtn);
-
-// Tombol Beli PR Coin
-const buyBtn = document.createElement("button");
-buyBtn.textContent = "💳 Beli PR Coin";
-buyBtn.id = "buyBtn";
-buyBtn.style.position = "fixed";
-buyBtn.style.bottom = "70px";
-buyBtn.style.right = "20px";
-buyBtn.style.zIndex = "1000";
-buyBtn.style.padding = "10px 15px";
-buyBtn.style.borderRadius = "10px";
-buyBtn.style.backgroundColor = "#007bff";
-buyBtn.style.color = "white";
-buyBtn.style.border = "none";
-document.body.appendChild(buyBtn);
-
-// Tampilkan saldo
-const coinDisplay = document.createElement("div");
-coinDisplay.id = "coinDisplay";
-coinDisplay.style.position = "fixed";
-coinDisplay.style.bottom = "170px";
-coinDisplay.style.right = "20px";
-coinDisplay.style.zIndex = "1000";
-coinDisplay.style.color = "white";
-coinDisplay.style.fontSize = "16px";
-coinDisplay.style.fontWeight = "bold";
-coinDisplay.textContent = `💰 PR Coin: ${prCoin}`;
-document.body.appendChild(coinDisplay);
-
-// Fungsi tombol
-mineBtn.addEventListener("click", () => {
-  prCoin++;
-  updateCoinDisplay();
-});
-
-buyBtn.addEventListener("click", () => {
-  prCoin += 10;
-  updateCoinDisplay();
-});
-
-function updateCoinDisplay() {
-  coinDisplay.textContent = `💰 PR Coin: ${prCoin}`;
+function startMove(x, y) {
+  moveX = x;
+  moveY = y;
 }
 
-// Kirim juga saldo PR Coin ke server (nantinya bisa disimpan)
-socket.emit("updateCoin", { id: socket.id, coin: prCoin });
-
-function updateLandPopup(index) {
-  const land = lands[index];
-  const popup = document.getElementById("landPopup");
-  const info = document.getElementById("landInfo");
-  const buyBtn = document.getElementById("buyLandBtn");
-
-  if (!land) {
-    info.textContent = `Tanah #${index} tersedia`;
-    buyBtn.style.display = "inline-block";
-    buyBtn.onclick = () => {
-      socket.emit("buyLand", index, currentPlayer?.gender || "Player");
-      popup.style.display = "none";
-    };
-  } else {
-    info.textContent = `Tanah #${index} dimiliki oleh ${land.ownerName}`;
-    buyBtn.style.display = "none";
-  }
-
-  popup.style.display = "block";
-}
-canvas.addEventListener("click", () => {
-  if (selectedLandIndex === null) {
-    document.getElementById("landPopup").style.display = "none";
-  }
-});
-
-socket.on("initData", ({ lands: serverLands, balances: serverBalances }) => {
-  lands = serverLands;
-  updateMarketplace();
-});
-
-socket.on("updateLands", (serverLands) => {
-  lands = serverLands;
-  updateMarketplace();
-});
-
-socket.on("updateBalances", (serverBalances) => {
-  // bisa ditampilkan saldo di UI
-});
-
-function updateMarketplace() {
-  const list = document.getElementById("landList");
-  list.innerHTML = "";
-
-  for (let id in lands) {
-    const land = lands[id];
-    if (land.forSale && land.ownerId !== socket.id) {
-      const div = document.createElement("div");
-      div.innerHTML = `Tanah #${id} oleh ${land.ownerName} - ${land.price} PR Coin 
-        <button onclick="buyFromPlayer(${id})">Beli Sekarang</button>`;
-      list.appendChild(div);
-    }
-  }
+function stopMove() {
+  moveX = 0;
+  moveY = 0;
 }
 
-function buyFromPlayer(landId) {
-  socket.emit("buyFromPlayer", landId);
-}
-window.buyFromPlayer = buyFromPlayer;
+btnUp?.addEventListener("touchstart", () => startMove(0, -1));
+btnDown?.addEventListener("touchstart", () => startMove(0, 1));
+btnLeft?.addEventListener("touchstart", () => startMove(-1, 0));
+btnRight?.addEventListener("touchstart", () => startMove(1, 0));
 
-if (land.ownerId === socket.id && !land.forSale) {
-  const sellBtn = document.createElement("button");
-  sellBtn.textContent = "Jual Tanah (50 PR)";
-  sellBtn.onclick = () => {
-    socket.emit("sellLand", index, 50);
-    document.getElementById("landPopup").style.display = "none";
-  };
-  popup.appendChild(sellBtn);
-}
-
-// Tambang PR Coin - Client-side (main.js)
-
-let prCoin = 0;
-let mining = false;
-
-// Tombol untuk mulai menambang
-const mineButton = document.createElement("button");
-mineButton.textContent = "⛏️ Tambang PR Coin";
-mineButton.style.position = "fixed";
-mineButton.style.right = "10px";
-mineButton.style.bottom = "100px";
-mineButton.style.padding = "10px 20px";
-mineButton.style.zIndex = "20";
-mineButton.onclick = () => {
-  if (!mining) {
-    mining = true;
-    mineButton.textContent = "⛏️ Menambang...";
-    setTimeout(() => {
-      socket.emit("minePRCoin");
-      mining = false;
-      mineButton.textContent = "⛏️ Tambang PR Coin";
-    }, 3000); // waktu menambang 3 detik
-  }
-};
-document.body.appendChild(mineButton);
-
-// Dapat PR Coin dari server
-socket.on("prCoinUpdate", (amount) => {
-  prCoin = amount;
-  updateCoinDisplay();
+["btnUp", "btnDown", "btnLeft", "btnRight"].forEach(id => {
+  document.getElementById(id)?.addEventListener("touchend", stopMove);
 });
-
-function updateCoinDisplay() {
-  let el = document.getElementById("coinDisplay");
-  if (!el) {
-    el = document.createElement("div");
-    el.id = "coinDisplay";
-    el.style.position = "fixed";
-    el.style.right = "10px";
-    el.style.top = "10px";
-    el.style.background = "gold";
-    el.style.color = "black";
-    el.style.padding = "5px 10px";
-    el.style.borderRadius = "8px";
-    el.style.zIndex = "20";
-    document.body.appendChild(el);
-  }
-  el.textContent = `💰 PR Coin: ${prCoin}`;
-}
-
