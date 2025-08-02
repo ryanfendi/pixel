@@ -337,3 +337,54 @@ if (land.ownerId === socket.id && !land.forSale) {
   };
   popup.appendChild(sellBtn);
 }
+
+// Tambang PR Coin - Client-side (main.js)
+
+let prCoin = 0;
+let mining = false;
+
+// Tombol untuk mulai menambang
+const mineButton = document.createElement("button");
+mineButton.textContent = "⛏️ Tambang PR Coin";
+mineButton.style.position = "fixed";
+mineButton.style.right = "10px";
+mineButton.style.bottom = "100px";
+mineButton.style.padding = "10px 20px";
+mineButton.style.zIndex = "20";
+mineButton.onclick = () => {
+  if (!mining) {
+    mining = true;
+    mineButton.textContent = "⛏️ Menambang...";
+    setTimeout(() => {
+      socket.emit("minePRCoin");
+      mining = false;
+      mineButton.textContent = "⛏️ Tambang PR Coin";
+    }, 3000); // waktu menambang 3 detik
+  }
+};
+document.body.appendChild(mineButton);
+
+// Dapat PR Coin dari server
+socket.on("prCoinUpdate", (amount) => {
+  prCoin = amount;
+  updateCoinDisplay();
+});
+
+function updateCoinDisplay() {
+  let el = document.getElementById("coinDisplay");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "coinDisplay";
+    el.style.position = "fixed";
+    el.style.right = "10px";
+    el.style.top = "10px";
+    el.style.background = "gold";
+    el.style.color = "black";
+    el.style.padding = "5px 10px";
+    el.style.borderRadius = "8px";
+    el.style.zIndex = "20";
+    document.body.appendChild(el);
+  }
+  el.textContent = `💰 PR Coin: ${prCoin}`;
+}
+
