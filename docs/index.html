@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <div id="genderSelector">
     <h2>Pilih Karakter</h2>
     <button onclick="selectGender('male')">👦 Pria</button>
@@ -19,13 +20,12 @@
     <input type="text" id="chatInput" placeholder="Type message..." />
   </div>
 
+  <!-- Joystick -->
+  <div id="joystick">
+    <div id="stick"></div>
+  </div>
+
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script src="main.js"></script>
-  <script src="chat.js"></script>
-  
-  <div id="joystick">
-  <div id="stick"></div>
-</div>
-
 </body>
 </html>
