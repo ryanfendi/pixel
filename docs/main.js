@@ -1,4 +1,11 @@
 const canvas = document.getElementById('gameCanvas');
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas(); // Panggil sekali di awal
+
 const ctx = canvas.getContext('2d');
 const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev");
 
