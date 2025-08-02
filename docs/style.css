@@ -60,3 +60,29 @@ canvas {
   padding: 10px;
   font-size: 16px;
 }
+#joystickContainer {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  width: 100px;
+  height: 100px;
+  touch-action: none;
+  z-index: 10;
+}
+#joystickBase {
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  position: relative;
+}
+#joystickThumb {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  transition: 0.05s;
+}
