@@ -293,3 +293,47 @@ canvas.addEventListener("click", () => {
     document.getElementById("landPopup").style.display = "none";
   }
 });
+
+socket.on("initData", ({ lands: serverLands, balances: serverBalances }) => {
+  lands = serverLands;
+  updateMarketplace();
+});
+
+socket.on("updateLands", (serverLands) => {
+  lands = serverLands;
+  updateMarketplace();
+});
+
+socket.on("updateBalances", (serverBalances) => {
+  // bisa ditampilkan saldo di UI
+});
+
+function updateMarketplace() {
+  const list = document.getElementById("landList");
+  list.innerHTML = "";
+
+  for (let id in lands) {
+    const land = lands[id];
+    if (land.forSale && land.ownerId !== socket.id) {
+      const div = document.createElement("div");
+      div.innerHTML = `Tanah #${id} oleh ${land.ownerName} - ${land.price} PR Coin 
+        <button onclick="buyFromPlayer(${id})">Beli Sekarang</button>`;
+      list.appendChild(div);
+    }
+  }
+}
+
+function buyFromPlayer(landId) {
+  socket.emit("buyFromPlayer", landId);
+}
+window.buyFromPlayer = buyFromPlayer;
+
+if (land.ownerId === socket.id && !land.forSale) {
+  const sellBtn = document.createElement("button");
+  sellBtn.textContent = "Jual Tanah (50 PR)";
+  sellBtn.onclick = () => {
+    socket.emit("sellLand", index, 50);
+    document.getElementById("landPopup").style.display = "none";
+  };
+  popup.appendChild(sellBtn);
+}
