@@ -7,8 +7,9 @@ let currentPlayer = null;
 let moveX = 0;
 let moveY = 0;
 let chatMessages = {};
+let isTouching = false; // Untuk mendeteksi apakah touchscreen sedang aktif
 
-// Gambar
+// Load background & character images
 const bg = new Image();
 bg.src = 'assets/bg.png';
 
@@ -19,7 +20,7 @@ const images = {
 images.male.src = 'assets/player_male.png';
 images.female.src = 'assets/player_female.png';
 
-// Fungsi pilih karakter
+// Pilih gender
 function selectGender(gender) {
   document.getElementById('genderSelector').style.display = 'none';
   canvas.style.display = 'block';
@@ -40,7 +41,7 @@ socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
 
-// Tampilkan chat bubble di atas karakter
+// Terima chat
 socket.on("chat", ({ id, message }) => {
   chatMessages[id] = { text: message, time: Date.now() };
 
@@ -51,7 +52,7 @@ socket.on("chat", ({ id, message }) => {
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
 
-// Input chat
+// Chat input
 const chatInput = document.getElementById("chatInput");
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && chatInput.value.trim() !== "") {
@@ -60,78 +61,60 @@ chatInput.addEventListener("keydown", (e) => {
   }
 });
 
-// Keyboard movement (PC)
+// Keyboard PC
 let keys = {};
-window.addEventListener("keydown", (e) => { keys[e.key] = true; });
-window.addEventListener("keyup", (e) => { keys[e.key] = false; });
+window.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+});
+window.addEventListener("keyup", (e) => {
+  keys[e.key] = false;
+});
 
 function updateKeyboardMovement() {
+  if (isTouching) return; // Abaikan jika sedang sentuh
+
+  moveX = 0;
+  moveY = 0;
+
   if (keys["ArrowUp"] || keys["w"]) moveY = -1;
   else if (keys["ArrowDown"] || keys["s"]) moveY = 1;
-  else if (!dragging) moveY = 0;
 
   if (keys["ArrowLeft"] || keys["a"]) moveX = -1;
   else if (keys["ArrowRight"] || keys["d"]) moveX = 1;
-  else if (!dragging) moveX = 0;
 }
 
-// Touchscreen joystick
-let dragging = false;
-const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
-
-joystick.addEventListener("touchstart", () => {
-  dragging = true;
-});
-
-joystick.addEventListener("touchend", () => {
-  dragging = false;
-  stick.style.left = "30px";
-  stick.style.top = "30px";
+// Tombol arah HP
+function startMove(x, y) {
+  moveX = x;
+  moveY = y;
+  isTouching = true;
+}
+function stopMove() {
   moveX = 0;
   moveY = 0;
+  isTouching = false;
+}
+
+["btnUp", "btnDown", "btnLeft", "btnRight"].forEach(id => {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  btn.addEventListener("touchstart", () => {
+    if (id === "btnUp") startMove(0, -1);
+    if (id === "btnDown") startMove(0, 1);
+    if (id === "btnLeft") startMove(-1, 0);
+    if (id === "btnRight") startMove(1, 0);
+  });
+  btn.addEventListener("touchend", stopMove);
 });
 
-joystick.addEventListener("touchmove", (e) => {
-  if (!dragging) return;
-  e.preventDefault();
-
-  const rect = joystick.getBoundingClientRect();
-  const touch = e.touches[0];
-  const x = touch.clientX - rect.left - 50;
-  const y = touch.clientY - rect.top - 50;
-
-  const max = 40;
-  const clampedX = Math.max(-max, Math.min(max, x));
-  const clampedY = Math.max(-max, Math.min(max, y));
-
-  stick.style.left = `${clampedX + 50 - 20}px`;
-  stick.style.top = `${clampedY + 50 - 20}px`;
-
-  moveX = clampedX / max;
-  moveY = clampedY / max;
-});
-
-// Tombol Arah (Mobile)
-document.getElementById("btnUp")?.addEventListener("touchstart", () => moveY = -1);
-document.getElementById("btnDown")?.addEventListener("touchstart", () => moveY = 1);
-document.getElementById("btnLeft")?.addEventListener("touchstart", () => moveX = -1);
-document.getElementById("btnRight")?.addEventListener("touchstart", () => moveX = 1);
-
-["btnUp", "btnDown"].forEach(id => {
-  document.getElementById(id)?.addEventListener("touchend", () => moveY = 0);
-});
-["btnLeft", "btnRight"].forEach(id => {
-  document.getElementById(id)?.addEventListener("touchend", () => moveX = 0);
-});
-
-// Game Loop
+// Game loop
 function gameLoop() {
   requestAnimationFrame(gameLoop);
 
   if (!currentPlayer) return;
 
   updateKeyboardMovement();
+
   currentPlayer.x += moveX * 2;
   currentPlayer.y += moveY * 2;
   socket.emit("move", currentPlayer);
@@ -158,28 +141,3 @@ function gameLoop() {
   }
 }
 gameLoop();
-const btnUp = document.getElementById("btnUp");
-const btnDown = document.getElementById("btnDown");
-const btnLeft = document.getElementById("btnLeft");
-const btnRight = document.getElementById("btnRight");
-
-let touchInterval;
-
-function startMove(x, y) {
-  moveX = x;
-  moveY = y;
-}
-
-function stopMove() {
-  moveX = 0;
-  moveY = 0;
-}
-
-btnUp?.addEventListener("touchstart", () => startMove(0, -1));
-btnDown?.addEventListener("touchstart", () => startMove(0, 1));
-btnLeft?.addEventListener("touchstart", () => startMove(-1, 0));
-btnRight?.addEventListener("touchstart", () => startMove(1, 0));
-
-["btnUp", "btnDown", "btnLeft", "btnRight"].forEach(id => {
-  document.getElementById(id)?.addEventListener("touchend", stopMove);
-});
