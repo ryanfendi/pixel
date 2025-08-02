@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PixelRich</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="genderSelector">
+    <h2>Pilih Karakter</h2>
+    <button onclick="selectGender('male')">👦 Pria</button>
+    <button onclick="selectGender('female')">👧 Wanita</button>
+  </div>
+
+  <canvas id="gameCanvas" width="640" height="480" style="display:none;"></canvas>
+
+  <div id="chatBox" style="display:none;">
+    <div id="messages"></div>
+    <input type="text" id="chatInput" placeholder="Type message..." />
+  </div>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="main.js"></script>
+  <script src="chat.js"></script>
+</body>
+</html>

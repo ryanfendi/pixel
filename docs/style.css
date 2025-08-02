@@ -1,0 +1,43 @@
+
+body {
+  margin: 0;
+  background-color: #222;
+  font-family: sans-serif;
+  color: white;
+  text-align: center;
+}
+
+canvas {
+  display: block;
+  margin: auto;
+  background-color: #333;
+}
+
+#genderSelector {
+  text-align: center;
+  margin-top: 100px;
+}
+
+#genderSelector button {
+  font-size: 20px;
+  padding: 15px 30px;
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #444;
+  color: white;
+  cursor: pointer;
+}
+
+#genderSelector button:hover {
+  background-color: #666;
+}
+
+#chatBox {
+  margin-top: 20px;
+}
+
+#chatInput {
+  padding: 10px;
+  font-size: 16px;
+}
