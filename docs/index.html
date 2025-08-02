@@ -14,22 +14,17 @@
   </div>
 
   <canvas id="gameCanvas" width="640" height="480" style="display:none;"></canvas>
+<!-- Tombol Arah -->
+<div id="dpad">
+  <button id="btnUp">🔼</button><br>
+  <button id="btnLeft">◀️</button>
+  <button id="btnDown">🔽</button>
+  <button id="btnRight">▶️</button>
+</div>
 
   <div id="chatBox" style="display:none;">
   <div id="messages" style="height: 100px; overflow-y: auto;"></div>
   <input type="text" id="chatInput" placeholder="Type message..." />
-
-    <div id="joystick">
-  <div id="stick"></div>
-</div>
-
-</div>
-
-
-  <!-- Joystick -->
-  <div id="joystick">
-    <div id="stick"></div>
-  </div>
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script src="main.js"></script>
