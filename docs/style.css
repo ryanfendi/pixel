@@ -58,43 +58,33 @@ canvas {
   border: 1px solid #333;
 }
 
-/* DPAD (TOUCHSCREEN CONTROL) */
+/* Tombol Arah (DPAD) */
 #dpad {
   position: fixed;
-  bottom: 30px;
-  left: 30px;
-  display: grid;
-  grid-template-columns: 50px 50px 50px;
-  grid-template-rows: 50px 50px;
-  grid-template-areas:
-    ". up ."
-    "left down right";
-  gap: 10px;
+  bottom: 20px;
+  left: 20px;
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
 }
 
-#btnUp {
-  grid-area: up;
-}
-#btnDown {
-  grid-area: down;
-}
-#btnLeft {
-  grid-area: left;
-}
-#btnRight {
-  grid-area: right;
+#dpad > div {
+  display: flex;
+  gap: 5px;
 }
 
 #dpad button {
+  width: 50px;
+  height: 50px;
   font-size: 24px;
-  padding: 10px;
   border: none;
   border-radius: 8px;
   background-color: #444;
   color: white;
-  width: 50px;
-  height: 50px;
+  cursor: pointer;
+  touch-action: none;
 }
 
 /* OPTIONAL RESPONSIVENESS */
