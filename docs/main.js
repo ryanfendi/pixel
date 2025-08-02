@@ -22,7 +22,43 @@ images.female.src = 'assets/player_female.png';
 images.male.onload = () => console.log("Gambar male termuat");
 images.female.onload = () => console.log("Gambar female termuat");
 
-function selectGender(gender) {
+
+function selectGender(gender) {let joystick = {
+  velocity: { x: 0, y: 0 },
+  dragging: false,
+  origin: { x: 0, y: 0 },
+};
+
+const jb = document.getElementById('joystickBase');
+const jt = document.getElementById('joystickThumb');
+
+jb.addEventListener("touchstart", e => {
+  joystick.dragging = true;
+  const t = e.touches[0];
+  joystick.origin.x = t.clientX;
+  joystick.origin.y = t.clientY;
+});
+jb.addEventListener("touchmove", e => {
+  if (!joystick.dragging) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const dx = t.clientX - joystick.origin.x;
+  const dy = t.clientY - joystick.origin.y;
+  const dist = Math.min(40, Math.hypot(dx, dy));
+  const ang = Math.atan2(dy, dx);
+  const x = Math.cos(ang) * dist;
+  const y = Math.sin(ang) * dist;
+  joystick.velocity.x = x / 5;
+  joystick.velocity.y = y / 5;
+  jt.style.transform = `translate(${x}px, ${y}px)`;
+});
+jb.addEventListener("touchend", () => {
+  joystick.dragging = false;
+  joystick.velocity.x = 0;
+  joystick.velocity.y = 0;
+  jt.style.transform = `translate(0px, 0px)`;
+});
+
   document.getElementById('genderSelector').style.display = 'none';
   canvas.style.display = 'block';
   document.getElementById('chatBox').style.display = 'block';
@@ -82,10 +118,11 @@ socket.on("updatePlayers", (serverPlayers) => {
 function gameLoop() {
   requestAnimationFrame(gameLoop);
   if (currentPlayer) {
-  currentPlayer.x += moveX * 2;
-  currentPlayer.y += moveY * 2;
+  currentPlayer.x += joystick.velocity.x;
+  currentPlayer.y += joystick.velocity.y;
   socket.emit("move", currentPlayer);
 }
+
 
   if (!currentPlayer) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
