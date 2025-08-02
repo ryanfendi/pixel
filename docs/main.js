@@ -158,3 +158,28 @@ function gameLoop() {
   }
 }
 gameLoop();
+const btnUp = document.getElementById("btnUp");
+const btnDown = document.getElementById("btnDown");
+const btnLeft = document.getElementById("btnLeft");
+const btnRight = document.getElementById("btnRight");
+
+let touchInterval;
+
+function startMove(x, y) {
+  moveX = x;
+  moveY = y;
+}
+
+function stopMove() {
+  moveX = 0;
+  moveY = 0;
+}
+
+btnUp?.addEventListener("touchstart", () => startMove(0, -1));
+btnDown?.addEventListener("touchstart", () => startMove(0, 1));
+btnLeft?.addEventListener("touchstart", () => startMove(-1, 0));
+btnRight?.addEventListener("touchstart", () => startMove(1, 0));
+
+["btnUp", "btnDown", "btnLeft", "btnRight"].forEach(id => {
+  document.getElementById(id)?.addEventListener("touchend", stopMove);
+});
