@@ -1,9 +1,11 @@
+/* style.css */
 body {
   margin: 0;
   background-color: #222;
   font-family: sans-serif;
   color: white;
   text-align: center;
+  overflow: hidden;
 }
 
 canvas {
@@ -75,4 +77,5 @@ canvas {
   left: 30px;
   top: 30px;
   z-index: 11;
+  transition: transform 0.05s;
 }
