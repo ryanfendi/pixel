@@ -149,3 +149,70 @@ function gameLoop() {
   }
 }
 gameLoop();
+
+
+// === Tambahan ke main.js === //
+
+// Saldo coin player
+let prCoin = 0;
+
+// Tombol Tambang PR Coin
+const mineBtn = document.createElement("button");
+mineBtn.textContent = "⛏️ Tambang PR Coin";
+mineBtn.id = "mineBtn";
+mineBtn.style.position = "fixed";
+mineBtn.style.bottom = "120px";
+mineBtn.style.right = "20px";
+mineBtn.style.zIndex = "1000";
+mineBtn.style.padding = "10px 15px";
+mineBtn.style.borderRadius = "10px";
+mineBtn.style.backgroundColor = "#28a745";
+mineBtn.style.color = "white";
+mineBtn.style.border = "none";
+document.body.appendChild(mineBtn);
+
+// Tombol Beli PR Coin
+const buyBtn = document.createElement("button");
+buyBtn.textContent = "💳 Beli PR Coin";
+buyBtn.id = "buyBtn";
+buyBtn.style.position = "fixed";
+buyBtn.style.bottom = "70px";
+buyBtn.style.right = "20px";
+buyBtn.style.zIndex = "1000";
+buyBtn.style.padding = "10px 15px";
+buyBtn.style.borderRadius = "10px";
+buyBtn.style.backgroundColor = "#007bff";
+buyBtn.style.color = "white";
+buyBtn.style.border = "none";
+document.body.appendChild(buyBtn);
+
+// Tampilkan saldo
+const coinDisplay = document.createElement("div");
+coinDisplay.id = "coinDisplay";
+coinDisplay.style.position = "fixed";
+coinDisplay.style.bottom = "170px";
+coinDisplay.style.right = "20px";
+coinDisplay.style.zIndex = "1000";
+coinDisplay.style.color = "white";
+coinDisplay.style.fontSize = "16px";
+coinDisplay.style.fontWeight = "bold";
+coinDisplay.textContent = `💰 PR Coin: ${prCoin}`;
+document.body.appendChild(coinDisplay);
+
+// Fungsi tombol
+mineBtn.addEventListener("click", () => {
+  prCoin++;
+  updateCoinDisplay();
+});
+
+buyBtn.addEventListener("click", () => {
+  prCoin += 10;
+  updateCoinDisplay();
+});
+
+function updateCoinDisplay() {
+  coinDisplay.textContent = `💰 PR Coin: ${prCoin}`;
+}
+
+// Kirim juga saldo PR Coin ke server (nantinya bisa disimpan)
+socket.emit("updateCoin", { id: socket.id, coin: prCoin });
