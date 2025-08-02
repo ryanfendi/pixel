@@ -1,5 +1,5 @@
 // main.js
-const socket = io("https://YOUR_REPLIT_URL.repl.co");
+const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73.pike.replit.dev/");
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
