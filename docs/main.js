@@ -100,3 +100,22 @@ function gameLoop() {
   }
 }
 gameLoop();
+let keys = {};
+
+window.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+});
+
+window.addEventListener("keyup", (e) => {
+  keys[e.key] = false;
+});
+
+function updateKeyboardMovement() {
+  if (keys["ArrowUp"] || keys["w"]) moveY = -1;
+  else if (keys["ArrowDown"] || keys["s"]) moveY = 1;
+  else moveY = 0;
+
+  if (keys["ArrowLeft"] || keys["a"]) moveX = -1;
+  else if (keys["ArrowRight"] || keys["d"]) moveX = 1;
+  else moveX = 0;
+}
