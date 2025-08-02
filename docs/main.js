@@ -4,6 +4,46 @@ const socket = io("https://1c3cca08-8104-423a-bed7-e7ce5f3adbcb-00-2brvmohad4s73
 
 let players = {};
 let currentPlayer = null;
+let moveX = 0;
+let moveY = 0;
+
+const stick = document.getElementById('stick');
+const joystick = document.getElementById('joystick');
+
+let dragging = false;
+
+joystick.addEventListener('touchstart', (e) => {
+  dragging = true;
+});
+
+joystick.addEventListener('touchmove', (e) => {
+  if (!dragging) return;
+  e.preventDefault();
+
+  const rect = joystick.getBoundingClientRect();
+  const touch = e.touches[0];
+  const x = touch.clientX - rect.left - 50;
+  const y = touch.clientY - rect.top - 50;
+
+  const max = 40;
+  const clampedX = Math.max(-max, Math.min(max, x));
+  const clampedY = Math.max(-max, Math.min(max, y));
+
+  stick.style.left = `${clampedX + 50 - 20}px`;
+  stick.style.top = `${clampedY + 50 - 20}px`;
+
+  moveX = clampedX / max;
+  moveY = clampedY / max;
+});
+
+joystick.addEventListener('touchend', () => {
+  dragging = false;
+  stick.style.left = '30px';
+  stick.style.top = '30px';
+  moveX = 0;
+  moveY = 0;
+});
+
 
 // Load background
 const bg = new Image();
