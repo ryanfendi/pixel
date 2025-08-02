@@ -15,6 +15,11 @@ let moveX = 0;
 let moveY = 0;
 let chatMessages = {};
 let isTouching = false; // Untuk mendeteksi apakah touchscreen sedang aktif
+let lands = [];
+
+socket.on("updateLands", (data) => {
+  lands = data;
+});
 
 // Load background & character images
 const bg = new Image();
@@ -144,6 +149,28 @@ function gameLoop() {
         ctx.fillStyle = "white";
         ctx.font = "12px sans-serif";
         ctx.fillText(msg, p.x - bubbleWidth / 2 + 21, p.y - 10);
+
+// Render grid tanah
+for (let i = 0; i < 100; i++) {
+  const col = i % 10;
+  const row = Math.floor(i / 10);
+  const x = 50 + col * 50;
+  const y = 50 + row * 50;
+
+  ctx.strokeStyle = "yellow";
+  ctx.strokeRect(x, y, 48, 48);
+
+  const land = lands[i];
+  if (land) {
+    ctx.fillStyle = "rgba(255,255,0,0.2)";
+    ctx.fillRect(x, y, 48, 48);
+    ctx.fillStyle = "white";
+    ctx.font = "10px sans-serif";
+    ctx.fillText(land.ownerName, x + 2, y + 12);
+  }
+}
+
+        
       }
     }
   }
