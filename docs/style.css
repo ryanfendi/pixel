@@ -90,20 +90,36 @@ canvas {
 }
 
 
-/* Tombol Arah HP */
+/* Tombol Kontrol (D-Pad) */
 #dpad {
   position: fixed;
-  bottom: 90px; /* Muncul di atas chatBox */
-  left: 20px;
-  z-index: 20;
+  bottom: 110px; /* agar di atas chat box */
+  left: 50%;
+  transform: translateX(-50%);
   display: grid;
   grid-template-areas:
     ". up ."
-    "left down right";
-  grid-gap: 8px;
-  padding: 5px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
+    "left . right"
+    ". down .";
+  grid-gap: 10px;
+  width: 160px;
+  z-index: 100;
+}
+
+#dpad button {
+  font-size: 20px;
+  padding: 12px 14px;
+  background: linear-gradient(to bottom, #444, #222);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+#dpad button:active {
+  transform: scale(0.95);
 }
 
 #btnUp    { grid-area: up; }
@@ -111,18 +127,7 @@ canvas {
 #btnLeft  { grid-area: left; }
 #btnRight { grid-area: right; }
 
-#dpad button {
-  font-size: 22px;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background-color: #444;
-  color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  cursor: pointer;
-}
-
-
+/* Chat Box */
 #chatBox {
   position: fixed;
   bottom: 10px;
@@ -130,8 +135,41 @@ canvas {
   transform: translateX(-50%);
   width: 90%;
   max-width: 500px;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 10px;
+  background-color: #111;
+  border: 1px solid #333;
   padding: 10px;
-  z-index: 10;
+  border-radius: 10px;
+  z-index: 99;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+#messages {
+  max-height: 120px;
+  overflow-y: auto;
+  background: #1a1a1a;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: left;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #222;
+}
+
+#messages::-webkit-scrollbar {
+  width: 6px;
+}
+#messages::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+#chatInput {
+  margin-top: 5px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
 }
