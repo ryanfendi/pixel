@@ -1,5 +1,9 @@
 const bg = new Image();
 bg.src = 'assets/bg.png';
+bg.onload = () => console.log("Background termuat");
+
+const bg = new Image();
+bg.src = 'assets/bg.png';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -84,14 +88,14 @@ function gameLoop() {
 }
 
   if (!currentPlayer) return;
-ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let id in players) {
     const p = players[id];
     const img = images[p.gender];
     if (img.complete && img.naturalHeight !== 0) {
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
       ctx.drawImage(img, p.x, p.y, 32, 32);
     }
   }
