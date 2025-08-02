@@ -1,35 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>PixelRich</title>
   <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
+  <!-- Pilih Karakter -->
   <div id="genderSelector">
     <h2>Pilih Karakter</h2>
     <button onclick="selectGender('male')">👦 Pria</button>
     <button onclick="selectGender('female')">👧 Wanita</button>
   </div>
 
-  <canvas id="gameCanvas" width="640" height="480" style="display:none;"></canvas>
-<!-- Tombol Arah -->
-<div id="dpad">
-  <button id="btnUp">🔼</button><br>
-  <button id="btnLeft">◀️</button>
-  <button id="btnDown">🔽</button>
-  <button id="btnRight">▶️</button>
-</div>
+  <!-- Game Canvas -->
+  <canvas id="gameCanvas" width="640" height="480" style="display: none;"></canvas>
 
- <div id="chatBox" style="display:none;">
-  <div id="messages" style="height: 100px; overflow-y: auto; background: #111; padding: 5px; margin-bottom: 5px;"></div>
-  <input type="text" id="chatInput" placeholder="Ketik pesan..." />
-</div>
+  <!-- Chat Box -->
+  <div id="chatBox" style="display: none;">
+    <div id="messages" style="height: 100px; overflow-y: auto; background: #111; padding: 5px; margin-bottom: 5px;"></div>
+    <input type="text" id="chatInput" placeholder="Ketik pesan..." />
+  </div>
 
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-<script src="main.js"></script>
-<script src="chat.js"></script> <!-- HARUS DI SINI -->
+  <!-- Joystick (Touchscreen) -->
+  <div id="joystick">
+    <div id="stick"></div>
+  </div>
+
+  <!-- Tombol Arah (PC/alternatif) -->
+  <div id="dpad">
+    <button id="btnUp">🔼</button><br />
+    <button id="btnLeft">◀️</button>
+    <button id="btnDown">🔽</button>
+    <button id="btnRight">▶️</button>
+  </div>
+
+  <!-- Script -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="main.js"></script>
+  <script src="chat.js"></script>
 
 </body>
 </html>
