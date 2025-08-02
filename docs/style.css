@@ -90,15 +90,17 @@ canvas {
 /* Tombol Arah HP */
 #dpad {
   position: fixed;
-  bottom: 80px; /* disesuaikan agar sejajar chat */
-  left: 10px;   /* menempel ke kiri layar */
+  bottom: 90px; /* Muncul di atas chatBox */
+  left: 20px;
+  z-index: 20;
   display: grid;
   grid-template-areas:
     ". up ."
     "left down right";
-  grid-template-columns: 50px 50px 50px;
-  grid-gap: 5px;
-  z-index: 100;
+  grid-gap: 8px;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
 }
 
 #btnUp    { grid-area: up; }
@@ -107,12 +109,12 @@ canvas {
 #btnRight { grid-area: right; }
 
 #dpad button {
-  width: 50px;
-  height: 50px;
-  font-size: 20px;
+  font-size: 22px;
+  padding: 12px;
   border: none;
   border-radius: 8px;
   background-color: #444;
   color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  cursor: pointer;
 }
