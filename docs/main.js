@@ -22,7 +22,6 @@ images.female.src = 'assets/player_female.png';
 // Joystick
 const stick = document.getElementById('stick');
 const joystick = document.getElementById('joystick');
-
 let dragging = false;
 
 joystick.addEventListener('touchstart', (e) => {
@@ -47,6 +46,8 @@ joystick.addEventListener('touchmove', (e) => {
 
   moveX = clampedX / max;
   moveY = clampedY / max;
+
+  console.log("Joystick:", moveX.toFixed(2), moveY.toFixed(2));
 });
 
 joystick.addEventListener('touchend', () => {
@@ -72,10 +73,10 @@ function selectGender(gender) {
   socket.emit("newPlayer", currentPlayer);
 }
 
-// Penting: agar bisa dipanggil dari HTML
+// Agar bisa diakses dari HTML button onclick
 window.selectGender = selectGender;
 
-// Update dari server
+// Update data pemain dari server
 socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
@@ -105,7 +106,7 @@ function gameLoop() {
 }
 gameLoop();
 
-// Keyboard movement (untuk PC)
+// Keyboard controls
 let keys = {};
 
 window.addEventListener("keydown", (e) => {
@@ -116,12 +117,19 @@ window.addEventListener("keyup", (e) => {
   keys[e.key] = false;
 });
 
+// Fungsi gerakan keyboard, hanya aktif jika joystick tidak digunakan
 function updateKeyboardMovement() {
-  if (keys["ArrowUp"] || keys["w"]) moveY = -1;
-  else if (keys["ArrowDown"] || keys["s"]) moveY = 1;
-  else if (!dragging) moveY = 0;
+  if (dragging) return; // Prioritaskan joystick jika aktif
 
-  if (keys["ArrowLeft"] || keys["a"]) moveX = -1;
-  else if (keys["ArrowRight"] || keys["d"]) moveX = 1;
-  else if (!dragging) moveX = 0;
+  let tempX = 0;
+  let tempY = 0;
+
+  if (keys["ArrowUp"] || keys["w"]) tempY = -1;
+  else if (keys["ArrowDown"] || keys["s"]) tempY = 1;
+
+  if (keys["ArrowLeft"] || keys["a"]) tempX = -1;
+  else if (keys["ArrowRight"] || keys["d"]) tempX = 1;
+
+  moveX = tempX;
+  moveY = tempY;
 }
