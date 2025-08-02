@@ -7,44 +7,6 @@ let currentPlayer = null;
 let moveX = 0;
 let moveY = 0;
 
-const stick = document.getElementById('stick');
-const joystick = document.getElementById('joystick');
-
-let dragging = false;
-
-joystick.addEventListener('touchstart', (e) => {
-  dragging = true;
-});
-
-joystick.addEventListener('touchmove', (e) => {
-  if (!dragging) return;
-  e.preventDefault();
-
-  const rect = joystick.getBoundingClientRect();
-  const touch = e.touches[0];
-  const x = touch.clientX - rect.left - 50;
-  const y = touch.clientY - rect.top - 50;
-
-  const max = 40;
-  const clampedX = Math.max(-max, Math.min(max, x));
-  const clampedY = Math.max(-max, Math.min(max, y));
-
-  stick.style.left = `${clampedX + 50 - 20}px`;
-  stick.style.top = `${clampedY + 50 - 20}px`;
-
-  moveX = clampedX / max;
-  moveY = clampedY / max;
-});
-
-joystick.addEventListener('touchend', () => {
-  dragging = false;
-  stick.style.left = '30px';
-  stick.style.top = '30px';
-  moveX = 0;
-  moveY = 0;
-});
-
-
 // Load background
 const bg = new Image();
 bg.src = 'assets/bg.png';
@@ -58,9 +20,6 @@ images.male.src = 'assets/player_male.png';
 images.female.src = 'assets/player_female.png';
 
 // Joystick
-let moveX = 0;
-let moveY = 0;
-
 const stick = document.getElementById('stick');
 const joystick = document.getElementById('joystick');
 
@@ -98,7 +57,7 @@ joystick.addEventListener('touchend', () => {
   moveY = 0;
 });
 
-// Gender select
+// Fungsi pilih gender
 function selectGender(gender) {
   document.getElementById('genderSelector').style.display = 'none';
   canvas.style.display = 'block';
@@ -113,18 +72,22 @@ function selectGender(gender) {
   socket.emit("newPlayer", currentPlayer);
 }
 
-// Server updates
+// Penting: agar bisa dipanggil dari HTML
+window.selectGender = selectGender;
+
+// Update dari server
 socket.on("updatePlayers", (serverPlayers) => {
   players = serverPlayers;
 });
 
-// Game loop
+// Game loop utama
 function gameLoop() {
   requestAnimationFrame(gameLoop);
 
   if (!currentPlayer) return;
-  
+
   updateKeyboardMovement();
+
   currentPlayer.x += moveX * 2;
   currentPlayer.y += moveY * 2;
   socket.emit("move", currentPlayer);
@@ -135,12 +98,14 @@ function gameLoop() {
   for (let id in players) {
     const p = players[id];
     const img = images[p.gender];
-    if (img.complete) {
+    if (img.complete && img.naturalHeight !== 0) {
       ctx.drawImage(img, p.x, p.y, 32, 32);
     }
   }
 }
 gameLoop();
+
+// Keyboard movement (untuk PC)
 let keys = {};
 
 window.addEventListener("keydown", (e) => {
@@ -154,9 +119,9 @@ window.addEventListener("keyup", (e) => {
 function updateKeyboardMovement() {
   if (keys["ArrowUp"] || keys["w"]) moveY = -1;
   else if (keys["ArrowDown"] || keys["s"]) moveY = 1;
-  else moveY = 0;
+  else if (!dragging) moveY = 0;
 
   if (keys["ArrowLeft"] || keys["a"]) moveX = -1;
   else if (keys["ArrowRight"] || keys["d"]) moveX = 1;
-  else moveX = 0;
+  else if (!dragging) moveX = 0;
 }
