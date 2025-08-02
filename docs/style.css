@@ -118,3 +118,17 @@ canvas {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   cursor: pointer;
 }
+
+
+#chatBox {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 10;
+}
